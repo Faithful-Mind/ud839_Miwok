@@ -10,7 +10,10 @@ public class Word {
     /** Miwok translation for the word */
     private String mMiwokTranslation;
     /** Image resource ID for the word */
-    private int mImageResId;
+    private int mImageResId = NO_IMAGE_PROVIDED;
+
+    /** Constant value that represents no image was provided for this word */
+    private static final int NO_IMAGE_PROVIDED = -1;
 
     /**
      * Create a new {@link Word} object.
@@ -22,6 +25,13 @@ public class Word {
     public Word(String defaultTranslation, String miwokTranslation) {
         this.mDefaultTranslation = defaultTranslation;
         this.mMiwokTranslation = miwokTranslation;
+    }
+
+    /**
+     * Returns whether or not there is an image for this word.
+     */
+    public boolean hasImage() {
+        return mImageResId != NO_IMAGE_PROVIDED;
     }
 
     /**
