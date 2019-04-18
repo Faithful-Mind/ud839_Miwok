@@ -3,6 +3,7 @@ package com.example.android.miwok;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,10 @@ import java.util.List;
  * based on a data source, which is a list of {@link Word} objects.
  */
 public class WordAdapter extends ArrayAdapter<Word> {
+    /** Resource ID for the background color for each item in this list of words */
+    private int mItemBackgroundColorResId = NO_COLOR_PROVIDED;
+    private static final int NO_COLOR_PROVIDED = -1;
+
     /**
      * Create a new {@link WordAdapter} object.
      *
@@ -29,6 +34,20 @@ public class WordAdapter extends ArrayAdapter<Word> {
         // Because this is a custom adapter for two TextViews and an ImageView, the adapter is not
         // going to use this second argument, so it can be any value. Here, we used 0.
         super(context, 0, words);
+    }
+
+    /**
+     * Create a new {@link WordAdapter} object.
+     *
+     * @param context                   is the current context (i.e. Activity) that the adapter is
+     *                                  being created in.
+     * @param words                     is the list of {@link Word}s to be displayed.
+     * @param itemBackgroundColorResId is the resource ID for the background color for each item in
+     *                                 this list of words.
+     */
+    public WordAdapter(Context context, List<Word> words, int itemBackgroundColorResId) {
+        super(context, 0, words);
+        this.mItemBackgroundColorResId = itemBackgroundColorResId;
     }
 
     /**
@@ -60,11 +79,20 @@ public class WordAdapter extends ArrayAdapter<Word> {
         defaultTextView.setText(currentWord.getDefaultTranslation());
 
         ImageView imageView = (ImageView) listItemView.findViewById(R.id.image);
+        // Hide image if absent
         if (currentWord.hasImage()) {
             imageView.setImageResource(currentWord.getImageResId());
             imageView.setVisibility(View.VISIBLE); // Make sure the view is visible
         } else {
             imageView.setVisibility(View.GONE);
+        }
+
+        // Set the theme color for the list item
+        if (mItemBackgroundColorResId != NO_COLOR_PROVIDED) {
+            View textContainerView = listItemView.findViewById(R.id.text_container);
+            textContainerView.setBackgroundColor(
+                    // Convert color resource ID to color integer
+                    ContextCompat.getColor(getContext(), mItemBackgroundColorResId));
         }
 
         return listItemView;
