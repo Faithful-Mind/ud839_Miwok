@@ -30,13 +30,6 @@ public class Word {
     }
 
     /**
-     * Returns whether or not there is an image for this word.
-     */
-    public boolean hasImage() {
-        return mImageResId != NO_IMAGE_PROVIDED;
-    }
-
-    /**
      * Create a new {@link Word} object.
      *
      * @param defaultTranslation is the word in a language that the user is already familiar with
@@ -67,6 +60,13 @@ public class Word {
     }
 
     /**
+     * Returns whether or not there is an image for this word.
+     */
+    public boolean hasImage() {
+        return mImageResId != NO_IMAGE_PROVIDED;
+    }
+
+    /**
      * Get the default translation of the word.
      */
     public String getDefaultTranslation() {
@@ -86,5 +86,15 @@ public class Word {
 
     public int getAudioResId() {
         return mAudioResId;
+    }
+
+    @Override
+    public String toString() {
+        return "Word{" +
+                "mDefaultTranslation='" + mDefaultTranslation + '\'' +
+                ", mMiwokTranslation='" + mMiwokTranslation + '\'' +
+                ", mImageResId=" + mImageResId +
+                ", mAudioResId=" + mAudioResId +
+                '}';
     }
 }
