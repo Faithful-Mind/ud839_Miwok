@@ -15,11 +15,9 @@
  */
 package com.example.android.miwok;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,50 +28,10 @@ public class MainActivity extends AppCompatActivity {
         // Set the content of the activity to use the activity_main.xml layout file
         setContentView(R.layout.activity_main);
 
-        // Find the View that shows the numbers category
-        TextView numbers = (TextView) findViewById(R.id.numbers);
-
-        // Set a click listener on that View
-        numbers.setOnClickListener(new View.OnClickListener() {
-            // The code in this method will be executed when the numbers View is clicked on.
-            @Override
-            public void onClick(View view) {
-                Intent numbersIntent = new Intent(MainActivity.this, NumbersActivity.class);
-                startActivity(numbersIntent);
-            }
-        });
-
-        // same for the family category
-        TextView family = (TextView) findViewById(R.id.family);
-        family.setOnClickListener(new View.OnClickListener() {
-            // The code in this method will be executed when the numbers View is clicked on.
-            @Override
-            public void onClick(View view) {
-                Intent numbersIntent = new Intent(MainActivity.this, FamilyActivity.class);
-                startActivity(numbersIntent);
-            }
-        });
-
-        // same for the colors category
-        TextView colors = (TextView) findViewById(R.id.colors);
-        colors.setOnClickListener(new View.OnClickListener() {
-            // The code in this method will be executed when the numbers View is clicked on.
-            @Override
-            public void onClick(View view) {
-                Intent numbersIntent = new Intent(MainActivity.this, ColorsActivity.class);
-                startActivity(numbersIntent);
-            }
-        });
-
-        // same for the phrases category
-        TextView phrases = (TextView) findViewById(R.id.phrases);
-        phrases.setOnClickListener(new View.OnClickListener() {
-            // The code in this method will be executed when the numbers View is clicked on.
-            @Override
-            public void onClick(View view) {
-                Intent numbersIntent = new Intent(MainActivity.this, PhrasesActivity.class);
-                startActivity(numbersIntent);
-            }
-        });
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+        // Create an adapter that knows which fragment should be shown on each page
+        CategoryPagerAdapter adapter =
+                new CategoryPagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(adapter);
     }
 }
