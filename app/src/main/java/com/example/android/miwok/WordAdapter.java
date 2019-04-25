@@ -1,76 +1,75 @@
 package com.example.android.miwok;
 
-import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
 
 /**
- * <code>WordAdapter</code> is an {@link ArrayAdapter} that can provide the layout for each list item
- * based on a data source, which is a list of {@link Word} objects.
+ * <code>WordAdapter</code> is an {@link RecyclerView.Adapter} that can provide the layout for each list item
+ * based on a data source, which is a {@link List} of {@link Word} objects.
  */
-public class WordAdapter extends ArrayAdapter<Word> {
+public class WordAdapter extends RecyclerView.Adapter {
+    /** List of {@link Word} */
+    private List<Word> mWords;
     /** Resource ID for the background color for each item in this list of words */
-    private int mItemBackgroundColorResId = NO_COLOR_PROVIDED;
-    private static final int NO_COLOR_PROVIDED = -1;
+    private int mItemBgColorResId = NOT_PROVIDED;
 
-    /**
-     * Create a new {@link WordAdapter} object.
-     *
-     * @param context is the current context (i.e. Activity) that the adapter is being created in.
-     * @param words   is the list of {@link Word}s to be displayed.
-     */
-    public WordAdapter(Context context, List<Word> words) {
-        // Here, we initialize the ArrayAdapter's internal storage for the context and the list.
-        // the second argument is used when the ArrayAdapter is populating a single TextView.
-        // Because this is a custom adapter for two TextViews and an ImageView, the adapter is not
-        // going to use this second argument, so it can be any value. Here, we used 0.
-        super(context, 0, words);
-    }
+    ListItemClickHandler listItemClickHandler;
 
-    /**
-     * Create a new {@link WordAdapter} object.
-     *
-     * @param context                   is the current context (i.e. Activity) that the adapter is
-     *                                  being created in.
-     * @param words                     is the list of {@link Word}s to be displayed.
-     * @param itemBackgroundColorResId is the resource ID for the background color for each item in
-     *                                 this list of words.
-     */
-    public WordAdapter(Context context, List<Word> words, int itemBackgroundColorResId) {
-        super(context, 0, words);
-        this.mItemBackgroundColorResId = itemBackgroundColorResId;
-    }
 
-    /**
-     * Provides a view for an AdapterView (ListView, GridView, etc.)
-     *
-     * @param position    The position in the list of data that should be displayed in the
-     *                    list item view.
-     * @param convertView The recycled view to populate.
-     * @param parent      The parent ViewGroup that is used for inflation.
-     * @return The View for the position in the AdapterView.
-     */
-    @NonNull
-    @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        // Check if the existing view is being reused, otherwise inflate the view
-        View listItemView = convertView;
-        if (listItemView == null) {
-            listItemView = LayoutInflater.from(getContext()).inflate(
-                    R.layout.list_item, parent, false);
+    private static final int NOT_PROVIDED = -1;
+
+    public static class WordViewHolder extends RecyclerView.ViewHolder {
+
+        public WordViewHolder(View itemView) {
+            super(itemView);
         }
+    }
 
-        // Get the {@link Word} object located at this position in the list
-        Word currentWord = getItem(position);
+
+    /**
+     * Constructor
+     * @param recyclerView is {@link RecyclerView} fot the {@link ListItemClickHandler}.
+     * @param words        is the list of {@link Word}s to be displayed.
+     */
+    public WordAdapter(RecyclerView recyclerView, List<Word> words) {
+        this.mWords = words;
+
+        listItemClickHandler = new ListItemClickHandler(recyclerView, mWords);
+    }
+
+    /**
+     * Constructor
+     * @param recyclerView     is {@link RecyclerView} fot the {@link ListItemClickHandler}.
+     * @param words            is the list of {@link Word}s to be displayed.
+     * @param itemBgColorResId is the resource ID for the background color for each item in
+     *                         this list of words.
+     */
+    public WordAdapter(RecyclerView recyclerView, List<Word> words, int itemBgColorResId) {
+        this(recyclerView, words);
+        this.mItemBgColorResId = itemBgColorResId;
+    }
+
+
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View listItemView = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.list_item, parent, false);
+        listItemView.setOnClickListener(listItemClickHandler);
+        RecyclerView.ViewHolder vh = new WordViewHolder(listItemView);
+        return vh;
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        View listItemView = holder.itemView;
+        Word currentWord = mWords.get(position);
 
         TextView miwokTextView = (TextView) listItemView.findViewById(R.id.miwok_text_view);
         miwokTextView.setText(currentWord.getMiwokTranslation());
@@ -78,8 +77,8 @@ public class WordAdapter extends ArrayAdapter<Word> {
         TextView defaultTextView = (TextView) listItemView.findViewById(R.id.default_text_view);
         defaultTextView.setText(currentWord.getDefaultTranslation());
 
-        ImageView imageView = (ImageView) listItemView.findViewById(R.id.image);
         // Hide image if absent
+        ImageView imageView = (ImageView) listItemView.findViewById(R.id.image);
         if (currentWord.hasImage()) {
             imageView.setImageResource(currentWord.getImageResId());
             imageView.setVisibility(View.VISIBLE); // Make sure the view is visible
@@ -88,13 +87,16 @@ public class WordAdapter extends ArrayAdapter<Word> {
         }
 
         // Set the theme color for the list item
-        if (mItemBackgroundColorResId != NO_COLOR_PROVIDED) {
+        if (mItemBgColorResId != NOT_PROVIDED) {
             View textContainerView = listItemView.findViewById(R.id.text_container);
             textContainerView.setBackgroundColor(
                     // Convert color resource ID to color integer
-                    ContextCompat.getColor(getContext(), mItemBackgroundColorResId));
+                    ContextCompat.getColor(listItemView.getContext(), mItemBgColorResId));
         }
+    }
 
-        return listItemView;
+    @Override
+    public int getItemCount() {
+        return mWords.size();
     }
 }

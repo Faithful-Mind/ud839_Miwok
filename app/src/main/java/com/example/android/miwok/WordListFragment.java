@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.DividerItemDecoration;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +15,12 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class NumbersFragment extends Fragment {
-    /** The {@link WordRecyclerAdapter} to handle word audio playback stuff */
-    WordRecyclerAdapter mWordRecyclerAdapter;
+public class WordListFragment extends Fragment {
+    /** The {@link WordAdapter} to handle word audio playback stuff */
+    WordAdapter mWordAdapter;
 
 
-    public NumbersFragment() {
+    public WordListFragment() {
         // Required empty public constructor
     }
 
@@ -30,17 +31,20 @@ public class NumbersFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.word_recycler, container, false);
 
         ArrayList<Word> words = getArguments().getParcelableArrayList("words");
+        int itemBgColorResId = getArguments().getInt("itemBgColorResId");
 
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.my_recycler_view);
         recyclerView.setHasFixedSize(true);
 
+        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+
         // use a linear layout manager
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
 
-        mWordRecyclerAdapter =
-                new WordRecyclerAdapter(recyclerView, words, R.color.category_numbers);
-        recyclerView.setAdapter(mWordRecyclerAdapter);
+        mWordAdapter =
+                new WordAdapter(recyclerView, words, itemBgColorResId);
+        recyclerView.setAdapter(mWordAdapter);
 
         return rootView;
     }
@@ -50,6 +54,6 @@ public class NumbersFragment extends Fragment {
         super.onStop();
         // When the activity is stopped, release the media player resources because we won't
         // be playing any more sounds.
-        mWordRecyclerAdapter.itemClickHandler.releaseMediaPlayerAndAudioFocus();
+        mWordAdapter.listItemClickHandler.releaseMediaPlayerAndAudioFocus();
     }
 }

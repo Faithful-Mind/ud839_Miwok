@@ -4,19 +4,19 @@ import android.app.Activity;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.AdapterView;
 
 import java.util.List;
 
 /**
- * This handler is for playing corresponding audio for each list item and related stuff. <br />
- * You may want to call {@link #releaseMediaPlayerAndAbandonAudioFocus()} in your
+ * This handler is for playing corresponding audio for each list item and related stuff
+ * for {@link WordAdapter}. <br />
+ * You may want to call {@link #releaseMediaPlayerAndAudioFocus()} in your
  * {@link Activity#onStop()} or {@link Activity#onPause()}.
  */
-public class ListItemClickHandler implements AdapterView.OnItemClickListener {
-    /** The current context */
-    private Context mContext;
+public class ListItemClickHandler implements View.OnClickListener {
+    private RecyclerView mRecyclerView;
     /** List of {@link Word} */
     private List<Word> mWords;
     /** Handles playback of all the sound files */
@@ -26,27 +26,28 @@ public class ListItemClickHandler implements AdapterView.OnItemClickListener {
 
     /**
      * Constructor
-     * @param context The current context.
-     * @param words   List of {@link Word} which contains audio resource ID.
+     * @param recyclerView is {@link RecyclerView} of the {@link WordAdapter} instance.
+     * @param words        is the List of {@link Word} which contains audio resource ID.
      */
-    public ListItemClickHandler(Context context, List<Word> words) {
-        this.mContext = context;
+    public ListItemClickHandler(RecyclerView recyclerView, List<Word> words) {
+        this.mRecyclerView = recyclerView;
         this.mWords = words;
-        mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+        mAudioManager =
+                (AudioManager) recyclerView.getContext().getSystemService(Context.AUDIO_SERVICE);
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    public void onClick(View v) {
         // Release the media player & audio focus if it currently exists
-        releaseMediaPlayerAndAbandonAudioFocus();
+        releaseMediaPlayerAndAudioFocus();
 
         // Request Audio Focus
         int result = mAudioManager.requestAudioFocus(mAudioFocusChangeListener,
                 AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
         if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
             // Start playback if granted Audio Focus.
-            int audioResId = mWords.get(position).getAudioResId();
-            mMediaPlayer = MediaPlayer.create(mContext, audioResId);
+            int audioResId = mWords.get(mRecyclerView.getChildAdapterPosition(v)).getAudioResId();
+            mMediaPlayer = MediaPlayer.create(v.getContext(), audioResId);
             mMediaPlayer.start();
             mMediaPlayer.setOnCompletionListener(mCompletionListener);
         }
@@ -55,7 +56,7 @@ public class ListItemClickHandler implements AdapterView.OnItemClickListener {
     /**
      * Release {@link #mMediaPlayer}'s resources & corresponding Audio Focus.
      */
-    void releaseMediaPlayerAndAbandonAudioFocus() {
+    public void releaseMediaPlayerAndAudioFocus() {
         releaseMediaPlayer();
         mAudioManager.abandonAudioFocus(mAudioFocusChangeListener);
     }
