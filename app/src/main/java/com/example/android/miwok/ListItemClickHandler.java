@@ -20,9 +20,9 @@ public class ListItemClickHandler implements AdapterView.OnItemClickListener {
     /** List of {@link Word} */
     private List<Word> mWords;
     /** Handles playback of all the sound files */
-    private MediaPlayer mMediaPlayer;
+    private static MediaPlayer mMediaPlayer;
     /** For handling corresponding Audio Focus */
-    private AudioManager mAudioManager;
+    private static AudioManager mAudioManager;
 
     /**
      * Constructor
@@ -37,8 +37,8 @@ public class ListItemClickHandler implements AdapterView.OnItemClickListener {
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        // Release the media player if it currently exists
-        releaseMediaPlayer();
+        // Release the media player & audio focus if it currently exists
+        releaseMediaPlayerAndAbandonAudioFocus();
 
         // Request Audio Focus
         int result = mAudioManager.requestAudioFocus(mAudioFocusChangeListener,
@@ -80,7 +80,7 @@ public class ListItemClickHandler implements AdapterView.OnItemClickListener {
      * This listener gets triggered whenever the audio focus changes
      * (i.e., we gain or lose audio focus because of another app or device).
      */
-    private AudioManager.OnAudioFocusChangeListener mAudioFocusChangeListener =
+    private static AudioManager.OnAudioFocusChangeListener mAudioFocusChangeListener =
             new AudioManager.OnAudioFocusChangeListener() {
                 @Override
                 public void onAudioFocusChange(int focusChange) {
