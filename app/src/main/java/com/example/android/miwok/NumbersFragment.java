@@ -3,11 +3,11 @@ package com.example.android.miwok;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -27,7 +27,7 @@ public class NumbersFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.word_list, container, false);
+        View rootView = inflater.inflate(R.layout.word_recycler, container, false);
 
         final ArrayList<Word> words = new ArrayList<Word>();
         words.add(new Word("one", "lutti", R.drawable.number_one, R.raw.number_one));
@@ -41,13 +41,23 @@ public class NumbersFragment extends Fragment {
         words.add(new Word("nine", "wo’e", R.drawable.number_nine, R.raw.number_nine));
         words.add(new Word("ten", "na’aacha", R.drawable.number_ten, R.raw.number_ten));
 
-        WordAdapter itemsAdapter =
-                new WordAdapter(getActivity(), words, R.color.category_numbers);
-        ListView listView = (ListView) rootView.findViewById(R.id.list);
-        listView.setAdapter(itemsAdapter);
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.my_recycler_view);
+        recyclerView.setHasFixedSize(true);
+
+        // use a linear layout manager
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+
+        WordRecyclerAdapter wRecyclerAdapter =
+                new WordRecyclerAdapter(recyclerView, words, R.color.category_numbers);
+        recyclerView.setAdapter(wRecyclerAdapter);
+//        WordAdapter itemsAdapter =
+//                new WordAdapter(getActivity(), words, R.color.category_numbers);
+//        ListView listView = (ListView) rootView.findViewById(R.id.list);
+//        listView.setAdapter(itemsAdapter);
 
         mListItemClickHandler = new ListItemClickHandler(getActivity(), words);
-        listView.setOnItemClickListener(mListItemClickHandler);
+//        listView.setOnItemClickListener(mListItemClickHandler);
 
         return rootView;
     }
