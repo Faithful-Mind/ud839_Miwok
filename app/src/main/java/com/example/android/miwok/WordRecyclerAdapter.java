@@ -21,7 +21,7 @@ public class WordRecyclerAdapter extends RecyclerView.Adapter {
     /** Resource ID for the background color for each item in this list of words */
     private int mItemBgColorResId = NOT_PROVIDED;
 
-    View.OnClickListener itemClickHandler;
+    ItemClickHandler itemClickHandler;
 
 
     private static final int NOT_PROVIDED = -1;

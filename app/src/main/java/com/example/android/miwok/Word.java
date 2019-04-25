@@ -1,10 +1,13 @@
 package com.example.android.miwok;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * <code>Word</code> represents a vocabulary word that the user wants to learn.
  * It contains a default translation and a Miwok translation for that word.
  */
-public class Word {
+public class Word implements Parcelable {
     /** Default translation for the word */
     private String mDefaultTranslation;
     /** Miwok translation for the word */
@@ -96,5 +99,39 @@ public class Word {
                 ", mImageResId=" + mImageResId +
                 ", mAudioResId=" + mAudioResId +
                 '}';
+    }
+
+    // for Parcelable
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mDefaultTranslation);
+        dest.writeString(mMiwokTranslation);
+        dest.writeInt(mImageResId);
+        dest.writeInt(mAudioResId);
+    }
+
+    public static final Parcelable.Creator<Word> CREATOR = new Creator<Word>() {
+        @Override
+        public Word createFromParcel(Parcel source) {
+            return new Word(source);
+        }
+
+        @Override
+        public Word[] newArray(int size) {
+            return new Word[size];
+        }
+    };
+
+    /** must be the same order of {@link #writeToParcel(Parcel, int)} */
+    private Word(Parcel source) {
+        mDefaultTranslation = source.readString();
+        mMiwokTranslation = source.readString();
+        mImageResId = source.readInt();
+        mAudioResId = source.readInt();
     }
 }
